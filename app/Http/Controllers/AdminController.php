@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Session;
 
 class AdminController extends Controller
 {
+    //admin page, and condition that anyone can't enter the dashboard except admin.
     public function index(){
         if(Session::get('type')=="Admin"){
             return view('admin.index');
@@ -20,6 +21,7 @@ class AdminController extends Controller
         return redirect()->back();
     }
 
+    //admin profile
     public function adminProfile(){
         if(Session::get('type')=="Admin"){
             $admin_user = User::find(Session::get('id'));
@@ -28,6 +30,8 @@ class AdminController extends Controller
         return redirect()->back();
     }
 
+
+    //customers information in dashboard
     public function customers(){
         if(Session::get('type')=="Admin"){
             $customers = User::where("type", "Customer")->get();
@@ -36,6 +40,7 @@ class AdminController extends Controller
         return redirect()->back();
     }
 
+    //products information in dashboard
     public function products(){
         if(Session::get('type')=="Admin"){
         $all_products = Product::all();
@@ -45,6 +50,7 @@ class AdminController extends Controller
         return redirect()->back();
     }
 
+    //admin can change user status
     public function changeUserStatus($status, $id){
         if(Session::get('type')=="Admin"){
         $user = User::find($id);
@@ -57,6 +63,7 @@ class AdminController extends Controller
     }
 
 
+    // order status (confirm, completed etc)
     public function changeOrderStatus($status, $id){
         if(Session::get('type')=="Admin"){
         $order = Order::find($id);
@@ -70,6 +77,7 @@ class AdminController extends Controller
 
 
 
+    //products trash method
     public function trash($id){
         if(Session::get('type')=="Admin"){
         $trash_products = Product::withTrashed()->find($id);
@@ -80,6 +88,7 @@ class AdminController extends Controller
         return redirect()->back();
     }
 
+    //trash page
     public function trashPage(){
         if(Session::get('type')=="Admin"){
         $all_trash_products = Product::onlyTrashed()->get();
@@ -88,6 +97,7 @@ class AdminController extends Controller
         return redirect()->back();
     }
 
+    //restore product data
     public function restore($id){
         if(Session::get('type')=="Admin"){
         $trash_products = Product::withTrashed()->find($id);
@@ -100,6 +110,7 @@ class AdminController extends Controller
         return redirect()->back();
     }
 
+    //delete permanently product data
     public function forceDelete($id){
         if(Session::get('type')=="Admin"){
         $trash_products = Product::withTrashed()->find($id);
@@ -114,6 +125,7 @@ class AdminController extends Controller
     }
 
 
+    //upload new product
     public function upload(Request $request){
         if(Session::get('type')=="Admin"){
             //image unique name generation.
@@ -138,6 +150,7 @@ class AdminController extends Controller
         return redirect()->back();
     }
 
+    //update product
     public function updateProduct(Request $request){
         if(Session::get('type')=="Admin"){
         //image unique name generation.
@@ -164,6 +177,7 @@ class AdminController extends Controller
         return redirect()->back();
     }
 
+    //all orders method to get the full order and products info.
     public function allOrders(){
         if(Session::get('type')=="Admin"){
             

@@ -18,6 +18,9 @@ use Laravel\Socialite\Facades\Socialite;
 
 class MainController extends Controller
 {
+
+    //main page with updated products.
+
     public function index(){
         $allProduct = Product::all();
         $newArrival = Product::where("type", "new-arrivals");
@@ -25,45 +28,55 @@ class MainController extends Controller
         return view('index', compact('allProduct', 'newArrival', 'hotSales'));
     }
 
+    //about page
     public function about(){
         return view('about');
     }
 
+
+    //blog page
     public function blog(){
         return view('blog');
     }
 
+    //single blog page
     public function singleBlog(){
         return view('singleBlog');
     }
 
     
+    //shop page
     public function shop(){
         return view('shop');
     }
 
     
+    //single product page
     public function singleShop($id){
         $singleProduct = Product::find($id);
         return view('singleShop', compact('singleProduct'));
     }
 
     
+    //cart method
     public function cart(){
         $cart_items = DB::table("products")->join("carts", "carts.productId", "products.id")->select("products.title", "products.quantites as pQuantity", "products.price" , "products.image", "carts.*")->where("carts.customerId", Session::get("id"))->get();
         return view('shopping_cart', compact("cart_items"));
     }
 
 
-    
+    //contact page
     public function contact(){
         return view('contact');
     }
 
+
+    //register page
     public function register(){
         return view('register');
     }
 
+    // register any user method
     public function registerUser(Request $request){
         //validation 
         $this->validate($request, [
@@ -87,10 +100,12 @@ class MainController extends Controller
         
     }
 
+    //login page
     public function login(){
         return view('login');
     }
 
+    //login any user.
     public function loginUser(Request $request){
         //finding user email and password
         $user = User::where("email", $request->input('email'))->where("password", $request->input('password'))->first();
@@ -115,12 +130,14 @@ class MainController extends Controller
         }
     }
 
+    //logout method
     public function logoutUser(){
         Session::forget("id");
         Session::forget("type");
         return redirect()->route('main.login')->with("success", "Logout Successfully!!");
     }
 
+    //add to cart method
     public function addCart(Request $request){
         if(Session::has("id")){
             $item = new Cart;
@@ -134,12 +151,14 @@ class MainController extends Controller
         }
     }
 
+    //delete cart item
     public function deleteCart($id){
         $delete_cart = Cart::find($id);
         $delete_cart->delete();
         return redirect()->back()->with("success", "Cart has been deleted successfull");
     }
 
+    //update cart items quantites
     public function updateCart(Request $request){
         if(Session::has("id")){
             $item = Cart::find($request->id);
@@ -152,7 +171,7 @@ class MainController extends Controller
     }
 
 
-    
+    //check out process
     public function checkout(Request $request){
         if(Session::has("id")){
             $order = new Order;
@@ -184,6 +203,7 @@ class MainController extends Controller
         }
     }
 
+    //payment method stripe
     public function paymentStripe(Request $request){
         $bill = $request->bill;
         $fullname = $request->fullname;
@@ -257,6 +277,7 @@ class MainController extends Controller
 
     }
 
+    //user profile
     public function profile(){
         if(Session::has('id')){
             $user = User::find(Session::get('id'));
@@ -268,6 +289,7 @@ class MainController extends Controller
         
     }
 
+    // user orders
     public function orders(){
         if(Session::has('id')){
             $orders = Order::where('customerId',Session::get('id'))->get();
@@ -285,7 +307,7 @@ class MainController extends Controller
 
 
 
-
+    //update user info
     public function updateUser(Request $request){
         //image unique name generation.
         if($request->hasFile('file')){
@@ -303,10 +325,12 @@ class MainController extends Controller
         return redirect()->back()->with("success", "Congratulations $request->fullname, Your Account is Updated");
     }
 
+    //google login
     public function googleLogin(){
         return Socialite::driver('google')->redirect();
     }
-
+    
+    //google login callback method
     public function googleCallback(){
         try{
             $user = Socialite::driver('google')->user();
