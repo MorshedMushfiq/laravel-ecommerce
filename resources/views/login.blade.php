@@ -1,7 +1,7 @@
 {{-- header part shows via component --}}
 <x-header title="Login | Fashion E-commerce" description="login Page of fashion ecommerce" keywords='login ecommerce multirole client'/>
 
-    <!-- Contact Section Begin -->
+    <!-- login Section Begin -->
     <section class="contact spad">
         <div class="container">
             <div class="section-title">
@@ -43,6 +43,6 @@
 
         </div>
     </section>
-    <!-- Contact Section End -->
+    <!-- login Section End -->
 {{-- footer part shows via component --}}
 <x-footer />

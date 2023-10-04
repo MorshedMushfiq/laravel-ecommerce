@@ -121,3 +121,19 @@
     
 {{-- footer part shows via component --}}
 <x-footer />
+
+
+
+
+
+
+{{-- 
+    
+    
+
+    
+    
+    
+    
+    
+    --}}

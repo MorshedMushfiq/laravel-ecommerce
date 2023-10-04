@@ -18,6 +18,7 @@
                     <table class="table table-striped table-borderless">
                       <thead>
                         <tr>
+                          <th>#</th>
                           <th>Title</th>
                           <th>Image</th>
                           <th>Price</th>

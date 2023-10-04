@@ -1,7 +1,7 @@
 {{-- header part shows via component --}}
 <x-header title="Register | Fashion E-commerce" description="register Page of fashion ecommerce" keywords='register ecommerce multirole client'/>
 
-    <!-- Contact Section Begin -->
+    <!-- register Section Begin -->
     <section class="contact spad">
         <div class="container">
             <div class="section-title">
@@ -35,6 +35,6 @@
             </div>
         </div>
     </section>
-    <!-- Contact Section End -->
+    <!-- register Section End -->
 {{-- footer part shows via component --}}
 <x-footer />

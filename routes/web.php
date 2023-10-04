@@ -71,7 +71,14 @@ Route::get('/delete_cart/{id}', [MainController::class, "deleteCart"])->name('de
 Route::post('/update_cart/{id}', [MainController::class, "updateCart"])->name('update.cart');
 Route::post('/checkout', [MainController::class, "checkout"])->name('checkout.cart');
 
+//stripe
 Route::post('/payment', [MainController::class, "paymentStripe"])->name('payment.stripe');
+
+
+Route::get('/success', [MainController::class, "success"])->name('success.stripe');
+Route::get('/cancel', [MainController::class, "cancel"])->name('cancel');
+Route::post('/webhook', [MainController::class, "webhook"])->name('webhook');
+
 
 
 Route::get("/myaccount", [MainController::class, "profile"])->name('main.profile');

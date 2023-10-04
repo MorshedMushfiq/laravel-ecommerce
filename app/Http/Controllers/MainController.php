@@ -3,18 +3,20 @@
 namespace App\Http\Controllers;
 
 
+use Exception;
 use App\Models\Cart;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\OrderItem;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\SUpport\Facades\Hash;
 use Illuminate\Validation\Validator;
 use Illuminate\Support\Facades\Session;
 use Laravel\Socialite\Facades\Socialite;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MainController extends Controller
 {
@@ -103,7 +105,11 @@ class MainController extends Controller
     //login page
     public function login(){
         return view('login');
+    
     }
+
+
+
 
     //login any user.
     public function loginUser(Request $request){
@@ -205,77 +211,144 @@ class MainController extends Controller
 
     //payment method stripe
     public function paymentStripe(Request $request){
-        $bill = $request->bill;
-        $fullname = $request->fullname;
-        $cell = $request->cell;
-        $address = $request->address;
+        $all_products = DB::table('products')->join("carts", "carts.productId", "products.id")->select("products.title", "products.image", 'products.price', 'carts.quantites as cQuantites', 'carts.*')->where("customerId", Session::get('id'))->get();
+        $lineItems=[];
+        //$total_price = 0;
+        foreach($all_products as $product){
+            $total_cost = $product->price * $product->cQuantites; 
+            $total_price = $total_cost; 
+            $lineItems[] = [
         
+            'price_data' => [
+                'currency' => 'usd',
+                'product_data' => [
+                'name' => $product->title,
+                'images' => [$product->image]
+                ],
+                'unit_amount' => $total_cost*100,
+            ],
+            'quantity' => 1,
+        ];
+        };
+        $stripe = new \Stripe\StripeClient(env("STRIPE_SECRET"));
+        $checkout_session = $stripe->checkout->sessions->create([
+            'line_items' => $lineItems,
+            'mode' => 'payment',
+            "customer_creation" => 'always',
+            'success_url' => route('success.stripe') .'?checkout_session_id={CHECKOUT_SESSION_ID}',
+            'cancel_url' => route('cancel'),
+          ]);
 
-        if(Session::has("id")){
             $order = new Order;
-            $order->status = "Paid";
-            $order->customerId = Session::get('id');
-            $order->bill = $request->bill;
+            $order->status= "unpaid";
+            $order->total_price = $total_price;
             $order->fullname = $request->fullname;
+            $order->customerId = Session::get('id');
             $order->cell = $request->cell;
             $order->address = $request->address;
-                        
-          
-            
-            if($order->save()){
-                $carts = Cart::where("customerId", Session::get('id'))->get();
+            $order->session_id = $checkout_session->id;
+            $order->save();
 
-                foreach($carts as $item){
-                    $products = Product::find($item->productId);
-                    $orderItem = new OrderItem;
-                    $orderItem->productId = $item->productId;
-                    $orderItem->quantites = $item->quantites;
-                    $orderItem->price = $products->price;
-                    $orderItem->orderId = $order->id;
-                    $orderItem->save();
-                    $item->delete();
-            //payment system
-            $stripe = new \Stripe\StripeClient(env("STRIPE_SECRET"));
-
-            $checkout_session = $stripe->checkout->sessions->create([
-                'line_items' =>[[
-                    'price_data' => [
-                        'currency' => 'usd',
-                        
-                        'product_data' => [
-                            'name' =>'Tshirt',
-                        ],
-                        "unit_amount" => $bill*100,
-                    ],
-                    "quantity" =>1,
-                    
-                ]],
-                'mode' => 'payment',
-                'success_url' => route('main.cart'),
-                'cancel_url' => route('main.contact'),
-            ]);
-
-                    //dd($checkout_session);
-
-                    return redirect()->away($checkout_session->url);
-                    
-
-                }
-                 
-
-                return redirect()->route('main.cart')->with("success", "Your order has been placed!!");
-
-            }else{
-                return redirect()->route('main.cart')->with("success", "Your order has not been placed!!");
-            }
-            return redirect()->route('main.cart')->with("success", "Your order has been placed successfull!!");
-
-        }else{
-            return redirect()->route('main.login')->with("error", "Please login to add this in your cart!!");
-        }
-
+          return redirect($checkout_session->url);
 
     }
+
+    public function success(Request $request){
+        $stripe = new \Stripe\StripeClient(env("STRIPE_SECRET"));
+
+        try{
+
+            $checkout_session_id = $request->get("checkout_session_id");
+            $session = $stripe->checkout->sessions->retrieve($checkout_session_id);
+            if(!$session){
+                throw new NotFoundHttpException;
+            }
+            $customer = $stripe->customers->retrieve($session->customer);
+            $order = Order::where("session_id", $checkout_session_id)->first();
+            if(!$order){
+                throw new NotFoundHttpException;
+            }
+            if($order->status=="unpaid"){
+                $order->status = "paid";
+                //for mail get email like this ($customer->email).
+                $order->$customer->email;
+                $order->save();              
+            }
+                      
+            $carts = Cart::where("customerId", Session::get("id"))->get();
+            foreach($carts as $item){
+                $products = Product::find($item->productId);
+                $orderItem = new OrderItem;
+                $orderItem->productId = $item->productId;
+                $orderItem->quantites = $item->quantites;
+                $orderItem->price = $products->price;
+                $orderItem->orderId = $order->id;
+                $orderItem->save();
+                $item->delete();
+            }    
+            
+            $msg = "Product Pay Successfull";
+            return view("success", compact("msg")); 
+ 
+
+        }catch(\Exception $e){
+            throw new NotFoundHttpException;
+        }  
+
+       
+    }
+
+    public function cancel(){
+
+    }
+
+
+
+    public function webhook(){
+
+        // This is your Stripe CLI webhook secret for testing your endpoint locally.
+        $endpoint_secret = env("STRIPE_WEBHOOK_KEY");
+
+        $payload = @file_get_contents('php://input');
+        $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'];
+        $event = null;
+
+        try {
+        $event = \Stripe\Webhook::constructEvent(
+            $payload, $sig_header, $endpoint_secret
+        );
+        } catch(\UnexpectedValueException $e) {
+        // Invalid payload
+            return response('', 400);
+        } catch(\Stripe\Exception\SignatureVerificationException $e) {
+        // Invalid signature
+        return response('', 400);
+        }
+
+        // Handle the event
+        switch ($event->type) {
+        case 'checkout.session.completed':
+            $session = $event->data->object;
+            $sessionId = $session->id;
+            $order = Order::where("session_id", $sessionId)->first();
+            if($order && $order->status==="unpaid"){
+                $order->status = "paid";
+                $order->save();
+                //send mail
+            }
+
+        // ... handle other event types
+        default:
+            echo 'Received unknown event type ' . $event->type;
+        }
+
+        return response('');
+    }
+
+
+
+
+
 
     //user profile
     public function profile(){
