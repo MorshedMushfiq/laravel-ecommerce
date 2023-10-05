@@ -271,7 +271,7 @@ class MainController extends Controller
             if($order->status=="unpaid"){
                 $order->status = "paid";
                 //for mail get email like this ($customer->email).
-                $order->$customer->email;
+                $order->email = $customer->email;
                 $order->save();              
             }
                       
