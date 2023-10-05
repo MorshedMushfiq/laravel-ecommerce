@@ -16,7 +16,7 @@
                             <p class='alert alert-danger'>{{Session::get('error')}}</p>
                             @endif
                         </div>
-                        <img class='d-block' style='width: 200px; padding: 20px; margin: 0px auto;' src="{{URL::asset('uploads/profiles/' . $admin_user->image)}}" alt="">
+                        <img class='d-block' style='width: 200px; padding: 20px; margin: 0px auto;' src="{{URL::asset('/storage/uploads/profiles/' . $admin_user->image)}}" alt="">
                         <form action="{{route('user.update')}}" method='POST' enctype="multipart/form-data">
                             @csrf
                             <div class="row">

@@ -38,7 +38,7 @@
                         @endphp
                         <tr>
                           <td>{{$trash_products->title}}</td>
-                          <td><img src="{{URL::asset('uploads/products/'.$trash_products->image)}}" alt=""></td>
+                          <td><img src="{{URL::asset('/storage/uploads/products/'.$trash_products->image)}}" alt=""></td>
                           <td class="font-weight-bold">${{$trash_products->price}}</td>
                           <td class="font-weight-medium">{{$trash_products->quantites}}</td>
                           <td class="font-weight-medium"><div class="badge badge-success">{{$trash_products->category}}</div></td>

@@ -49,7 +49,7 @@
                                 <tr>
                                     <td class="product__cart__item">
                                         <div class="product__cart__item__pic">
-                                            <img src="{{URL::asset('uploads/products/'.$items->image)}}" alt="">
+                                            <img src="{{URL::asset('/storage/uploads/products/'.$items->image)}}" alt="">
                                         </div>
                                         <div class="product__cart__item__text">
                                             <h6>{{$items->title}}</h6>

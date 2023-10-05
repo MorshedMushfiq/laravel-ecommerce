@@ -81,7 +81,7 @@
                                           @if($orders_item->orderId==$orders->id)
                                           <tr>
                                             <td>{{$orders_item->title}}</td>
-                                            <td><img src="{{URL::to('uploads/products/'. $orders_item->image)}}" alt=""></td>
+                                            <td><img src="{{URL::to('/storage/uploads/products/'. $orders_item->image)}}" alt=""></td>
                                             <td>{{$orders_item->price}}</td>
                                             <td>{{$orders_item->quantites}}</td>
                                             <td>{{$orders_item->price * $orders_item->quantites}}</td>
