@@ -38,7 +38,7 @@
                         <tr>
                           <td>{{$i}}</td>
                           <td>{{$customer->fullname}}</td>
-                          <td><img src="{{URL::asset('/storage/uploads/profiles/'.$customer->image)}}" alt=""></td>
+                          <td><img src="{{URL::asset('uploads/profiles/'.$customer->image)}}" alt=""></td>
                           <td class="font-weight-bold">{{$customer->email}}</td>
                           <td class="font-weight-medium">{{$customer->type}}</td>
                           <td class="font-weight-medium"><div class="badge badge-success">{{$customer->created_at}}</div></td>

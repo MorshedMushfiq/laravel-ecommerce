@@ -109,7 +109,7 @@
                         <tr>
                             <td>{{$i}}</td>
                           <td>{{$products->title}}</td>
-                          <td><img src="{{URL::asset('/storage/uploads/products/'.$products->image)}}" alt=""></td>
+                          <td><img src="{{URL::asset('uploads/products/'.$products->image)}}" alt=""></td>
                           <td class="font-weight-bold">${{$products->price}}</td>
                           <td class="font-weight-medium">{{$products->quantites}}</td>
                           <td class="font-weight-medium"><div class="badge badge-success">{{$products->category}}</div></td>

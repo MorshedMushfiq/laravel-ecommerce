@@ -132,7 +132,7 @@ class AdminController extends Controller
             if($request->hasFile('image')){
                 $img = $request->file('image');
                 $unique_name = md5(time().rand().".". $img->getClientOriginalExtension());
-                $img->storeAs("uploads/products", $unique_name);
+                $img->move(public_path("uploads/products"), $unique_name);
             }
 
             $product = new Product;
@@ -157,7 +157,7 @@ class AdminController extends Controller
         if($request->hasFile('image')){
             $img = $request->file('image');
             $unique_name = md5(time().rand().".". $img->getClientOriginalExtension());
-            $img->storeAs("uploads/products", $unique_name);
+            $img->move(public_path("uploads/products"), $unique_name);
         }
 
         $product = Product::find($request->id);

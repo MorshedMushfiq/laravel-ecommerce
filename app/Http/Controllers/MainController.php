@@ -89,7 +89,7 @@ class MainController extends Controller
         if($request->hasFile('file')){
             $img = $request->file('file');
             $unique_name = md5(time().rand().".". $img->getClientOriginalExtension());
-            $img->storeAs("uploads/profiles", $unique_name);
+            $img->move(public_path("uploads/profiles"), $unique_name);
         }
         //for register in database
         $user = new User;
@@ -386,7 +386,7 @@ class MainController extends Controller
         if($request->hasFile('file')){
             $img = $request->file('file');
             $unique_name = md5(time().rand().".". $img->getClientOriginalExtension());
-            $img->storeAs("uploads/profiles", $unique_name);
+            $img->move(public_path("uploads/profiles"), $unique_name);
         }
         //for register in database
         $user = User::find(Session::get('id'));

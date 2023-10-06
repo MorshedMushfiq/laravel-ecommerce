@@ -75,7 +75,7 @@
                                                     @foreach($all_order_products as $product)
                                                    @if($items->id == $product->orderId)
                                                     <tr>
-                                                        <td><img style='width: 100px;' src="{{URL::asset("/storage/uploads/products/". $product->image)}}" alt=""></td>
+                                                        <td><img style='width: 100px;' src="{{URL::asset("uploads/products/". $product->image)}}" alt=""></td>
                                                         <td>{{$product->title}}, {{$product->orderId}}</td>
                                                         <td>{{$product->price}}</td>
                                                         <td>{{$product->quantites}}</td>

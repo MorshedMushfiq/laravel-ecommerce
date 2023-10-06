@@ -108,7 +108,7 @@
                 @foreach($allProduct as $items)
                 <div class="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mix {{$items->type}}">
                     <div class="product__item">
-                        <div class="product__item__pic set-bg" data-setbg="{{URL::asset('/storage/uploads/products/' . $items->image)}}" alt="{{$items->keywords}}">
+                        <div class="product__item__pic set-bg" data-setbg="{{URL::asset('uploads/products/' . $items->image)}}" alt="{{$items->keywords}}">
                             <span class="label">New</span>
                             <ul class="product__hover">
                                 <li><a href="#"><img src="img/icon/heart.png" alt=""></a></li>
